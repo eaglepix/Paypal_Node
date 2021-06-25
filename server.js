@@ -1,5 +1,5 @@
 
-((express, server, bodyParser, fs) => {
+((express, server, bodyParser, fs, squatchPurchaseRepo) => {
 
     server.use(bodyParser.urlencoded({ extended: true }));
     server.use(express.static('pub'));
@@ -12,6 +12,7 @@
 
     server.get('/success/:orderID', (req, res) => {
         const orderID = req.params.orderID;
+        res.send(orderID);
     });
 
     server.get('/cancel/:orderID', (req, res) => {
@@ -46,6 +47,20 @@
 
     server.post('/buysingle', (req, res) => {
         const quantity = req.body.Quantity;
+        let purchaseName = 'Single Squatch Habitat';
+        let purchasePrice = 10.00;
+        let taxPrice = 0;
+        let shippingPrice = 0;
+        let description = 'Single Habitat Sasquatch Starter Kit';
+
+        squatchPurchaseRepo.BuySingle(purchaseName, purchasePrice, taxPrice, shippingPrice,
+            quantity, description, (err, url)=>{
+                if(err){
+                    res.json(err);
+                } else{
+                    res.redirect(url);
+                }
+            });
     });
 
     server.post('/buyrecurring', (req, res) => {
@@ -60,5 +75,6 @@
     (require('express'),
         require('express')(),
         require('body-parser'),
-        require('fs')
+        require('fs'),
+        require('./repos/squatchPurchaseRepo')
     )
